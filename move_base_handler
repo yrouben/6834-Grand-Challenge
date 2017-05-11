@@ -12,18 +12,22 @@ def get_coords(loc):
     key = '/locations/' + loc
     return rospy.get_param(key)
 
-def move(lb, ub, from_location, to_location):
-    coords = get_coords(to_location)
-    header = Header(frame_id='/map')
+def make_pose(coords):
     point = Point(**coords)
     quat = Quaternion(0, 0, 0, 1)
-    pose = Pose(point, quat)
+    return Pose(point, quat)
+
+def move(lb, ub, from_location, to_location):
+    start_coords = get_coords(from_location)
+    end_coords = get_coords(to_location)
+
+    header = Header(frame_id='/map')
 
     move_base_client = SimpleActionClient('move_base', MoveBaseAction)
     move_base_client.wait_for_server()
 
-    # somehow get path
-    path = [PoseStamped(header, pose)]
+    # somehow get path from start_coords, end_coords
+    path = [PoseStamped(header, make_pose(end_coords)]
 
     for goal in path:
     	move_base_client.send_goal(MoveBaseGoal(goal))
