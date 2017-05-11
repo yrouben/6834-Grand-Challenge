@@ -13,21 +13,20 @@ def get_coords(loc):
     return rospy.get_param(key)
 
 def make_pose(coords):
+    header = Header(frame_id='/map')
     point = Point(**coords)
     quat = Quaternion(0, 0, 0, 1)
-    return Pose(point, quat)
+    return PoseStamped(header, Pose(point, quat))
 
 def move(lb, ub, from_location, to_location):
     start_coords = get_coords(from_location)
     end_coords = get_coords(to_location)
 
-    header = Header(frame_id='/map')
-
     move_base_client = SimpleActionClient('move_base', MoveBaseAction)
     move_base_client.wait_for_server()
 
     # somehow get path from start_coords, end_coords
-    path = [PoseStamped(header, make_pose(end_coords)]
+    path = [make_pose(end_coords)]
 
     for goal in path:
     	move_base_client.send_goal(MoveBaseGoal(goal))
