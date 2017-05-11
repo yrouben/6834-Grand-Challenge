@@ -22,8 +22,12 @@ def move(lb, ub, from_location, to_location):
     move_base_client = SimpleActionClient('move_base', MoveBaseAction)
     move_base_client.wait_for_server()
 
-    move_base_client.send_goal(MoveBaseGoal(PoseStamped(header, pose)))
-    move_base_client.wait_for_result()
+    # somehow get path
+    path = [PoseStamped(header, pose)]
+
+    for goal in path:
+    	move_base_client.send_goal(MoveBaseGoal(goal))
+    	move_base_client.wait_for_result()
 
 
 if __name__=='__main__':
