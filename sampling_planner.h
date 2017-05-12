@@ -7,6 +7,11 @@
 #include <base_local_planner/world_model.h>
 #include <base_local_planner/costmap_model.h>
 
+#include <costmap_converter/costmap_converter_interface.h>
+#include <costmap_coverter/costmap_to_polygons.h>
+#include <boost/bind.hpp>
+#include <boost/shared_ptr.hpp>
+
 
 using std::string;
 
@@ -16,6 +21,12 @@ using std::string;
 namespace sampling_planner {
 
 class SamplingPlanner : public nav_core::BaseGlobalPlanner {
+
+private:
+	costmap_2d::Costmap2DROS* costmap_ros_;
+	costmap_2d::Costmap2D* costmap_
+	pluginlib::ClassLoader<costmap_converter::CostmapToPolygonsDBSMCCH> costmap_converter_loader_;
+	boost::shared_ptr<costmap_converter::CostmapToPolygonsDBSMCCH> costmap_converter_;
 public:
 
     SamplingPlanner();

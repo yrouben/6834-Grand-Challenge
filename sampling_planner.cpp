@@ -1,5 +1,6 @@
 #include <pluginlin/class_list_macros.h>
 #include "global_planner.h"
+#
 
 PLUGINLIB_EXPORT_CLASS(sampling_planner::SamplingPlanner, nav_core::BaseGlobalPlanner)
 
@@ -7,21 +8,69 @@ using namespace std;
 
 namespace sampling_planner {
 
-SamplingPlanner::SamplingPlanner (){
+SamplingPlanner::SamplingPlanner()
+: costmap_ros_(NULL),costmap_converter_loader_("costmap_converter", "costmap_converter::CostmapToPolygonsDBSMCCH"), initialized_(false){}
 
+SamplingPlanner::SamplingPlanner(std::string name, costmap_2d::Costmap2DROS* costmap_ros)
+: costmap_ros_(NULL),costmap_converter_loader_("costmap_converter", "costmap_converter::CostmapToPolygonsDBSMCCH"), initialized_(false){
+initialize(name, costmap_ros);
 }
-
-SamplingPlanner::SamplingPlanner(std::string name, costmap_2d::Costmap2DROS* costmap_ros){
-    initialize(name, costmap_ros);
-}
-
 
 void SamplingPlanner::initialize(std::string name, costmap_2d::Costmap2DROS* costmap_ros){
 
+
+
+
+    obstacles_pub.publish(msg)
+
+
+    if(!initialized_){
+        costmap_ros_ = costmap_ros;
+        costmap_ = costmap_ros_->getCostmap();
+
+        ros::NodeHandle n;
+        ros::NodeHandle nh("~/" + name);
+        ros::Publisher obstacles_pub = n.advertise<SamplingPackage::MapInfo>("mapinfo", 1000);
+        ros::Publisher obstacles_pub = n.advertise<SamplingPackage::PathEndPoints>("pathendpoints", 1000);
+
+        // private_nh.param("step_size", step_size_, costmap_->getResolution());
+        // private_nh.param("min_dist_from_robot", min_dist_from_robot_, 0.10);
+        // world_model_ = new base_local_planner::CostmapModel(*costmap_); 
+
+        try{
+            costmap_converter_ = costmap_converter_loader_.createInstance("costmap_converter_plugin");
+            std::string converter_name = costmap_converter_loader_.getName("costmap_converter_plugin");
+            // replace '::' by '/' to convert the c++ namespace to a NodeHandle namespace
+            boost::replace_all(converter_name, "::", "/");
+            costmap_converter_->initialize(ros::NodeHandle(nh, "costmap_converter/" + converter_name));
+            costmap_converter_->setCostmap2D(costmap_);
+        
+            costmap_converter_-> compute();
+
+            ROS_INFO_STREAM("Costmap conversion plugin " << "costmap_converter_plugin" << " loaded.");        
+        }
+        catch(pluginlib::PluginlibException& ex){
+            ROS_WARN("The specified costmap converter plugin cannot be loaded. All occupied costmap cells are treaten as point obstacles. Error message: %s", ex.what());
+            costmap_converter_.reset();
+        }
+        costmap_converter::PolygonContainerConstPtr polygons = costmap_converter_->getPolygons();
+        const double originX = costmap_ -> getOriginX();
+        const double originY = costmap_ -> getOriginY();
+        const double sizeX = costmap_ -> getSizeInMetersX();
+        const double sizeY = costmap_ -> getSizeInMetersY();
+        // Need to still make msg for mapinfo and publish
+        initialized_ = true;
+    }
+    else
+        ROS_WARN("This planner has already been initialized... doing nothing");
 }
 
 bool SamplingPlanner::makePlan(const geometry_msgs::PoseStamped& start, const geometry_msgs::PoseStamped& goal, std::vector<geometry_msgs::PoseStamped& plan){
+    // Need to publish the endpoints
+    // need to subscribe to path 
+
     // This is a dummer makeplan code. we just need to call our path planner here.
+    custom_obst_sub_ = nh.subscribe("obstacles", 1, &TebLocalPlannerROS::customObstacleCB, this);
     plan.push_back(start);
     for (int i=0; i<20; i++){
         geometry_msgs::PoseStamped new_goal = goal;
