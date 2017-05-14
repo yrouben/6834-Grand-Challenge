@@ -1,17 +1,11 @@
-from __future__ import division
-import math
-import numpy as np
-import random
-from graph import Graph, Edge
-from search_classes import SearchNode, Path
-from utils import *
-from shapely.geometry import Point, LineString
+from PRMPlanner import PRMPathPlanner
+from shapely.geometry import Polygon
 
 import rospy
 
 import cogrob.msg.MapInfo
 import nav_msgs.msg.Path
-#from geometry_msgs.msg import PoseStamped, Pose
+from geometry_msgs.msg import PoseStamped
 import cogrog.msg.PathEndPoints
 
 class PRMNode():
@@ -54,22 +48,39 @@ class PRMNode():
         env.bounds = bounds
         return env
 
-    def prepare_environment(self, message):
-        polygons = None
-        bounds = None
-        self.env = create_environment(polygons, bound)
+    def prepare_environment(self, msg):
+        for rospoly in msg.polygons:
+            polygon = []
+            for point in rospoly.points:
+                polygon.append([point.x, point.y])
+            polygons.append(Polygon(polygon))
+        bounds = [msg.originX, msg.originY, msg.originX + msg.lenX, msg.originY + msg.lenY]
+        self.env = create_environment(polygons, bounds)
 
     def plan(self):
         return self.prm_planner.path(self.env, self.env.bounds, self.start, self.goal, self.radius, self.resolution, self.isLazy)
 
     def prepare_output(path):
-        output = None
-        return None
+        output = nav_msgs.msg.Path()
+        poses = []
+        for point in path:
+            new_pose = PoseStamped()
+            new_pose.pose.position.x = point[0]
+            new_pose.pose.position.y = point[1]
+            poses.append(new_pose)
+        output.poses = poses
+        return output
 
     def path_callback(self, message)
         if self.env is not None:
-            self.start = None
-            self.goal = None
+            self.start = message.startpose.position.x, message.startpose.position.y
+            goalx, goaly = message.startpose.position.x, message.startpose.position.y
+            self.goal = Polygon([
+                (goalx-.01,goaly-.01),
+                (goalx-.01,goaly+.01),
+                (goalx+.01,goaly-.01),
+                (goalx+.01,goaly+.01)])
+
             self.publisher.publish(prepare_output(self.plan()))
 
     def main(self):
