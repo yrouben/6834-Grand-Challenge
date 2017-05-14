@@ -8,7 +8,6 @@
 #include <base_local_planner/costmap_model.h>
 
 #include <costmap_converter/costmap_converter_interface.h>
-#include <costmap_coverter/costmap_to_polygons.h>
 #include <boost/bind.hpp>
 #include <boost/shared_ptr.hpp>
 

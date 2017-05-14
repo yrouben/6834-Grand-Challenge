@@ -1,5 +1,5 @@
-#include <pluginlin/class_list_macros.h>
-#include "global_planner.h"
+#include <pluginlib/class_list_macros.h>
+#include "sampling_planner.h"
 #
 
 PLUGINLIB_EXPORT_CLASS(sampling_planner::SamplingPlanner, nav_core::BaseGlobalPlanner)
@@ -18,10 +18,6 @@ initialize(name, costmap_ros);
 
 void SamplingPlanner::initialize(std::string name, costmap_2d::Costmap2DROS* costmap_ros){
 
-
-
-
-    obstacles_pub.publish(msg)
 
 
     if(!initialized_){
@@ -59,6 +55,9 @@ void SamplingPlanner::initialize(std::string name, costmap_2d::Costmap2DROS* cos
         const double sizeX = costmap_ -> getSizeInMetersX();
         const double sizeY = costmap_ -> getSizeInMetersY();
         // Need to still make msg for mapinfo and publish
+        obstacles_pub.publish(msg)
+        
+            
         initialized_ = true;
     }
     else
