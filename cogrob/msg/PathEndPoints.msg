@@ -1,2 +1,0 @@
-Pose startpose
-Pose goalpose

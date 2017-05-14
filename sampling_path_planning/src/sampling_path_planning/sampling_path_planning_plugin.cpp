@@ -1,10 +1,16 @@
 #include <pluginlib/class_list_macros.h>
 #include "sampling_planner.h"
-#
+#include "sampling_path_planning/MapInfo.h"
+#include "sampling_path_planning/PathEndPoints.h"
+
 
 PLUGINLIB_EXPORT_CLASS(sampling_planner::SamplingPlanner, nav_core::BaseGlobalPlanner)
 
 using namespace std;
+
+//void pathCallback(const nav_msgs::Path::ConstPtr& msg) {
+//    ROS_INFO_STREAM("received");
+//}
 
 namespace sampling_planner {
 
@@ -26,12 +32,9 @@ void SamplingPlanner::initialize(std::string name, costmap_2d::Costmap2DROS* cos
 
         ros::NodeHandle n;
         ros::NodeHandle nh("~/" + name);
-        ros::Publisher obstacles_pub = n.advertise<SamplingPackage::MapInfo>("mapinfo", 1000);
-        ros::Publisher obstacles_pub = n.advertise<SamplingPackage::PathEndPoints>("pathendpoints", 1000);
-
-        // private_nh.param("step_size", step_size_, costmap_->getResolution());
-        // private_nh.param("min_dist_from_robot", min_dist_from_robot_, 0.10);
-        // world_model_ = new base_local_planner::CostmapModel(*costmap_); 
+        ros::Publisher obstacles_pub = n.advertise<sampling_path_planning::MapInfo>("map_info", 1000);
+        ros::Publisher endpts_pub_= n.advertise<sampling_path_planning::PathEndPoints>("start_and_end", 1000);
+        //ros::Subscriber path_sub_ = n.subscribe("PRM_path", 1000, pathCallback);
 
         try{
             costmap_converter_ = costmap_converter_loader_.createInstance("costmap_converter_plugin");
@@ -54,22 +57,35 @@ void SamplingPlanner::initialize(std::string name, costmap_2d::Costmap2DROS* cos
         const double originY = costmap_ -> getOriginY();
         const double sizeX = costmap_ -> getSizeInMetersX();
         const double sizeY = costmap_ -> getSizeInMetersY();
-        // Need to still make msg for mapinfo and publish
-        obstacles_pub.publish(msg)
+        
+        // make msg for mapinfo and publish
+        sampling_path_planning::MapInfo mapInfo;
+        mapInfo.polygons = *polygons;
+        mapInfo.originX = originX;
+        mapInfo.originY = originY;
+        mapInfo.lenX = sizeX;
+        mapInfo.lenY = sizeY;
+
+        obstacles_pub.publish(mapInfo);
         
             
         initialized_ = true;
-    }
+    }   
     else
         ROS_WARN("This planner has already been initialized... doing nothing");
 }
 
-bool SamplingPlanner::makePlan(const geometry_msgs::PoseStamped& start, const geometry_msgs::PoseStamped& goal, std::vector<geometry_msgs::PoseStamped& plan){
+bool SamplingPlanner::makePlan(const geometry_msgs::PoseStamped& start, const geometry_msgs::PoseStamped& goal, std::vector<geometry_msgs::PoseStamped>& plan){
     // Need to publish the endpoints
     // need to subscribe to path 
+    sampling_path_planning::PathEndPoints endPts;
+    endPts.startpose = start.pose;
+    endPts.goalpose = goal.pose;
+
+    endpts_pub_.publish(endPts);
 
     // This is a dummer makeplan code. we just need to call our path planner here.
-    custom_obst_sub_ = nh.subscribe("obstacles", 1, &TebLocalPlannerROS::customObstacleCB, this);
+    // custom_obst_sub_ = nh.subscribe("obstacles", 1, &TebLocalPlannerROS::customObstacleCB, this);
     plan.push_back(start);
     for (int i=0; i<20; i++){
         geometry_msgs::PoseStamped new_goal = goal;

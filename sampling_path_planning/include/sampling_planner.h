@@ -11,7 +11,6 @@
 #include <boost/bind.hpp>
 #include <boost/shared_ptr.hpp>
 
-
 using std::string;
 
 #ifndef SAMPLING_PLANNER_CPP
@@ -22,10 +21,13 @@ namespace sampling_planner {
 class SamplingPlanner : public nav_core::BaseGlobalPlanner {
 
 private:
-	costmap_2d::Costmap2DROS* costmap_ros_;
-	costmap_2d::Costmap2D* costmap_
-	pluginlib::ClassLoader<costmap_converter::CostmapToPolygonsDBSMCCH> costmap_converter_loader_;
-	boost::shared_ptr<costmap_converter::CostmapToPolygonsDBSMCCH> costmap_converter_;
+	bool initialized_;
+    ros::Publisher endpts_pub_;
+    ros::Subscriber path_sub_;
+    costmap_2d::Costmap2DROS* costmap_ros_;
+	costmap_2d::Costmap2D* costmap_;
+	pluginlib::ClassLoader<costmap_converter::BaseCostmapToPolygons> costmap_converter_loader_;
+	boost::shared_ptr<costmap_converter::BaseCostmapToPolygons> costmap_converter_;
 public:
 
     SamplingPlanner();
