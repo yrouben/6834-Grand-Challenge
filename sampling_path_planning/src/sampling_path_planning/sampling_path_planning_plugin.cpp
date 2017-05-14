@@ -2,15 +2,15 @@
 #include "sampling_planner.h"
 #include "sampling_path_planning/MapInfo.h"
 #include "sampling_path_planning/PathEndPoints.h"
-
+#include "nav_msgs/Path.h"
 
 PLUGINLIB_EXPORT_CLASS(sampling_planner::SamplingPlanner, nav_core::BaseGlobalPlanner)
 
 using namespace std;
 
-//void pathCallback(const nav_msgs::Path::ConstPtr& msg) {
-//    ROS_INFO_STREAM("received");
-//}
+void pathCallback(const nav_msgs::Path::ConstPtr& msg) {
+    ROS_INFO_STREAM("received");
+}
 
 namespace sampling_planner {
 
@@ -34,7 +34,7 @@ void SamplingPlanner::initialize(std::string name, costmap_2d::Costmap2DROS* cos
         ros::NodeHandle nh("~/" + name);
         ros::Publisher obstacles_pub = n.advertise<sampling_path_planning::MapInfo>("map_info", 1000);
         ros::Publisher endpts_pub_= n.advertise<sampling_path_planning::PathEndPoints>("start_and_end", 1000);
-        //ros::Subscriber path_sub_ = n.subscribe("PRM_path", 1000, pathCallback);
+        ros::Subscriber path_sub_ = n.subscribe("PRM_path", 1000, pathCallback);
 
         try{
             costmap_converter_ = costmap_converter_loader_.createInstance("costmap_converter_plugin");
