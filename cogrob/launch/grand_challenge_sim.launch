@@ -56,6 +56,10 @@
             <rosparam file="$(find cogrob)/data/base_local_planner_params.yaml" command="load" />
             <param name="base_global_planner" value="sampling_planner/SamplingPlanner" />
         </node>
+
+        <!-- PRM_Node -->
+        <node pkg="sampling_path_planning" type="PRM_node.py" name="PRM_Node">
+        </node>
     </group>
 
     <!-- Start the mpex instance for the PDDL planning. -->
