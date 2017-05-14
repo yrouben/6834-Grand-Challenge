@@ -1,0 +1,5 @@
+<library path="lib/libsampling_path_planning">
+    <class name="sampling_planner/SamplingPlanner" type="sampling_planner::SamplingPlanner" base_class_type="nav_core::BaseGlobalPlanner">
+        <description>sampling-based path planner for grand challenge</description>
+    </class>
+</library>

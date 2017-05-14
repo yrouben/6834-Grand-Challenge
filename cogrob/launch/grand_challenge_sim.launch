@@ -54,6 +54,7 @@
             <rosparam file="$(find cogrob)/data/global_costmap_params.yaml" command="load" />
             <rosparam file="$(find cogrob)/data/local_costmap_params.yaml" command="load" />
             <rosparam file="$(find cogrob)/data/base_local_planner_params.yaml" command="load" />
+            <param name="base_global_planner" value="sampling_planner/SamplingPlanner" />
         </node>
     </group>
 

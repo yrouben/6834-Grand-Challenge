@@ -15,10 +15,10 @@ void pathCallback(const nav_msgs::Path::ConstPtr& msg) {
 namespace sampling_planner {
 
 SamplingPlanner::SamplingPlanner()
-: costmap_ros_(NULL),costmap_converter_loader_("costmap_converter", "costmap_converter::CostmapToPolygonsDBSMCCH"), initialized_(false){}
+: costmap_ros_(NULL),costmap_converter_loader_("costmap_converter", "costmap_converter::BaseCostmapToPolygons"), initialized_(false){}
 
 SamplingPlanner::SamplingPlanner(std::string name, costmap_2d::Costmap2DROS* costmap_ros)
-: costmap_ros_(NULL),costmap_converter_loader_("costmap_converter", "costmap_converter::CostmapToPolygonsDBSMCCH"), initialized_(false){
+: costmap_ros_(NULL),costmap_converter_loader_("costmap_converter", "costmap_converter::BaseCostmapToPolygons"), initialized_(false){
 initialize(name, costmap_ros);
 }
 
@@ -36,9 +36,9 @@ void SamplingPlanner::initialize(std::string name, costmap_2d::Costmap2DROS* cos
         ros::Publisher endpts_pub_= n.advertise<sampling_path_planning::PathEndPoints>("start_and_end", 1000);
         ros::Subscriber path_sub_ = n.subscribe("PRM_path", 1000, pathCallback);
 
-        try{
-            costmap_converter_ = costmap_converter_loader_.createInstance("costmap_converter_plugin");
-            std::string converter_name = costmap_converter_loader_.getName("costmap_converter_plugin");
+        //try{
+            costmap_converter_ = costmap_converter_loader_.createInstance("costmap_converter::CostmapToPolygonsDBSMCCH");
+            std::string converter_name = costmap_converter_loader_.getName("costmap_converter::CostmapToPolygonsDBSMCCH");
             // replace '::' by '/' to convert the c++ namespace to a NodeHandle namespace
             boost::replace_all(converter_name, "::", "/");
             costmap_converter_->initialize(ros::NodeHandle(nh, "costmap_converter/" + converter_name));
@@ -47,11 +47,11 @@ void SamplingPlanner::initialize(std::string name, costmap_2d::Costmap2DROS* cos
             costmap_converter_-> compute();
 
             ROS_INFO_STREAM("Costmap conversion plugin " << "costmap_converter_plugin" << " loaded.");        
-        }
-        catch(pluginlib::PluginlibException& ex){
-            ROS_WARN("The specified costmap converter plugin cannot be loaded. All occupied costmap cells are treaten as point obstacles. Error message: %s", ex.what());
-            costmap_converter_.reset();
-        }
+        //}
+        //catch(pluginlib::PluginlibException& ex){
+        //    ROS_WARN("The specified costmap converter plugin cannot be loaded. All occupied costmap cells are treaten as point obstacles. Error message: %s", ex.what());
+        //    costmap_converter_.reset();
+        //}
         costmap_converter::PolygonContainerConstPtr polygons = costmap_converter_->getPolygons();
         const double originX = costmap_ -> getOriginX();
         const double originY = costmap_ -> getOriginY();
