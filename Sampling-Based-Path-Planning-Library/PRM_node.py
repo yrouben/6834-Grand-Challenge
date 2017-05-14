@@ -7,6 +7,13 @@ from search_classes import SearchNode, Path
 from utils import *
 from shapely.geometry import Point, LineString
 
+import rospy
+
+import cogrob.msg.MapInfo
+import nav_msgs.msg.Path
+#from geometry_msgs.msg import PoseStamped, Pose
+import cogrog.msg.PathEndPoints
+
 class PRMNode():
 
     """ Ros node plans path using PRM algorithm on a 2D environment
@@ -19,7 +26,17 @@ class PRMNode():
         self.resolution = resolution
         self.isLazy = isLazy
 
-    def create_environment(polygons):
+        self.env = None
+        self.start = None
+        self.goal = None
+
+        rospy.init_node('PRM_Node')
+        rospy.Subscriber('map_info', cogrob.msg.MapInfo, self.prepare_environment)
+
+        self.publisher = rospy.Publisher('PRM_Path', nav_msgs.msg.Path)
+
+
+    def create_environment(polygons, bounds):
         """
         Creates an environment object from a list of polygons representing obstacles.
 
@@ -34,26 +51,32 @@ class PRMNode():
             env.obstacles.append(poly)
             env.obstacles.map[i]
         env.expanded_obstacles = [obs.buffer(.75/2, resolution=2) for obs in env.obstacles]
-        env.calculate_scene_dimensions()
+        env.bounds = bounds
         return env
 
-    def plan(self, env, start, goal):
-        return self.prm_planner.path(env, env.bounds, start, goal, self.radius, self.resolution, self.isLazy)
-
-    def prepare_input(message):
+    def prepare_environment(self, message):
         polygons = None
-        start = None
-        goal = None
-        return polygons, start, goal
+        bounds = None
+        self.env = create_environment(polygons, bound)
 
-    def prepare_output(path, V, E):
-        pass
+    def plan(self):
+        return self.prm_planner.path(self.env, self.env.bounds, self.start, self.goal, self.radius, self.resolution, self.isLazy)
 
-    def main():
-        #listen for topic -> get message
-        #polygons, start, goal = prepare_input(message)
-        #env = create_environment(polygons)
-        #path, V, E = self.plan(env, start, goal)
-        #prepare_output
+    def prepare_output(path):
+        output = None
+        return None
 
+    def path_callback(self, message)
+        if self.env is not None:
+            self.start = None
+            self.goal = None
+            self.publisher.publish(prepare_output(self.plan()))
+
+    def main(self):
+        rospy.Subscriber('start_and_end', cogrob.msg.PathEndPoints, self.path_callback)
+        rospy.spin()
+
+if __name__ = '__main__':
+    prm_planner = PRMNode()
+    prm_planner.main()
 
