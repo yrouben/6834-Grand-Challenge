@@ -1,12 +1,14 @@
+#! /usr/bin/env python
+
 from PRMPlanner import PRMPathPlanner
 from shapely.geometry import Polygon
 
 import rospy
 
-import cogrob.msg.MapInfo
-import nav_msgs.msg.Path
+from sampling_path_planning.msg import MapInfo
+from nav_msgs.msg import Path
 from geometry_msgs.msg import PoseStamped
-import cogrog.msg.PathEndPoints
+from sampling_path_planning.msg import PathEndPoints
 
 class PRMNode():
 
@@ -14,7 +16,7 @@ class PRMNode():
 
     """
 
-    def __init__(self, radius, resolution, isLazy):
+    def __init__(self, radius=.01, resolution=3, isLazy=True):
         self.prm_planner = PRMPathPlanner()
         self.radius = radius
         self.resolution = resolution
@@ -25,9 +27,9 @@ class PRMNode():
         self.goal = None
 
         rospy.init_node('PRM_Node')
-        rospy.Subscriber('map_info', cogrob.msg.MapInfo, self.prepare_environment)
+        rospy.Subscriber('map_info', MapInfo, self.prepare_environment)
 
-        self.publisher = rospy.Publisher('PRM_Path', nav_msgs.msg.Path)
+        self.publisher = rospy.Publisher('PRM_Path', Path)
 
 
     def create_environment(polygons, bounds):
@@ -61,7 +63,7 @@ class PRMNode():
         return self.prm_planner.path(self.env, self.env.bounds, self.start, self.goal, self.radius, self.resolution, self.isLazy)
 
     def prepare_output(path):
-        output = nav_msgs.msg.Path()
+        output = Path()
         poses = []
         for point in path:
             new_pose = PoseStamped()
@@ -71,7 +73,7 @@ class PRMNode():
         output.poses = poses
         return output
 
-    def path_callback(self, message)
+    def path_callback(self, message):
         if self.env is not None:
             self.start = message.startpose.position.x, message.startpose.position.y
             goalx, goaly = message.startpose.position.x, message.startpose.position.y
@@ -84,10 +86,10 @@ class PRMNode():
             self.publisher.publish(prepare_output(self.plan()))
 
     def main(self):
-        rospy.Subscriber('start_and_end', cogrob.msg.PathEndPoints, self.path_callback)
+        rospy.Subscriber('start_and_end', PathEndPoints, self.path_callback)
         rospy.spin()
 
-if __name__ = '__main__':
+if __name__ == '__main__':
     prm_planner = PRMNode()
     prm_planner.main()
 
