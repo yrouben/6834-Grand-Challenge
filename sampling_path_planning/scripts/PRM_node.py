@@ -86,7 +86,7 @@ class PRMNode():
     def path_callback(self, message):
         if self.env is not None:
             self.start = message.startpose.position.x, message.startpose.position.y
-            goalx, goaly = message.startpose.position.x, message.startpose.position.y
+            goalx, goaly = message.goalpose.position.x, message.goalpose.position.y
             self.goal = Polygon([
                 (goalx-.01,goaly-.01),
                 (goalx-.01,goaly+.01),
