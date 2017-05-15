@@ -32,7 +32,7 @@ class PRMNode():
         self.publisher = rospy.Publisher('PRM_Path', Path)
 
 
-    def create_environment(polygons, bounds):
+    def create_environment(polygons, bounds=None):
         """
         Creates an environment object from a list of polygons representing obstacles.
 
@@ -48,6 +48,8 @@ class PRMNode():
             env.obstacles.map[i]
         env.expanded_obstacles = [obs.buffer(.75/2, resolution=2) for obs in env.obstacles]
         env.bounds = bounds
+        if env.bounds == None:
+            env.calculate_scene_dimensions()
         return env
 
     def prepare_environment(self, msg):
@@ -56,7 +58,8 @@ class PRMNode():
             for point in rospoly.points:
                 polygon.append([point.x, point.y])
             polygons.append(Polygon(polygon))
-        bounds = [msg.originX, msg.originY, msg.originX + msg.lenX, msg.originY + msg.lenY]
+       # bounds = [msg.originX, msg.originY, msg.originX + msg.lenX, msg.originY + msg.lenY]
+        bounds=None
         self.env = create_environment(polygons, bounds)
 
     def plan(self):
