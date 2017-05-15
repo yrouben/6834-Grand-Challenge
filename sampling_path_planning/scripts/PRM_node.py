@@ -53,6 +53,7 @@ class PRMNode():
         return env
 
     def prepare_environment(self, msg):
+        polygons = []
         for rospoly in msg.polygons:
             polygon = []
             for point in rospoly.points:
