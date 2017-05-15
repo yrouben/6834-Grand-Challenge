@@ -75,6 +75,7 @@ class PRMNode():
             new_pose.header.frame_id = "map"
             new_pose.pose.position.x = point[0]
             new_pose.pose.position.y = point[1]
+            new_pose.pose.orientation.w = 1
             poses.append(new_pose)
         output.poses = poses
 
