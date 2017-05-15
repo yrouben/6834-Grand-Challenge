@@ -65,7 +65,7 @@ class PRMPathPlanner():
 
         if q_init == q_goal:
             path = [q_init, q_goal]
-            V.union([q_init, q_goall])
+            V.union([q_init, q_goal])
             E.union([(q_init, q_goal)])
         elif self.isEdgeCollisionFree(q_init, q_goal, self.radius):
             path = [q_init, q_goal]

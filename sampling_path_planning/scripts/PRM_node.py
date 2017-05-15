@@ -2,6 +2,7 @@
 
 from PRMPlanner import PRMPathPlanner
 from shapely.geometry import Polygon
+from environment import Environment
 
 import rospy
 
@@ -45,7 +46,7 @@ class PRMNode():
         env = Environment()
         for (i,poly) in enumerate(polygons):
             env.obstacles.append(poly)
-            env.obstacles.map[i]
+            env.obstacles_map[i] = poly
         env.expanded_obstacles = [obs.buffer(.75/2, resolution=2) for obs in env.obstacles]
         env.bounds = bounds
         if env.bounds == None:
@@ -64,7 +65,7 @@ class PRMNode():
         self.env = self.create_environment(polygons, bounds)
 
     def plan(self):
-        return self.prm_planner.path(self.env, self.env.bounds, self.start, self.goal, self.radius, self.resolution, self.isLazy)
+        return self.prm_planner.path(self.env, self.env.bounds, self.start, self.goal, self.radius, self.resolution, self.isLazy)[0]
 
     def prepare_output(self, path):
         output = Path()
