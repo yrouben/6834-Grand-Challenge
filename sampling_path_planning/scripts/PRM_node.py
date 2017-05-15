@@ -32,7 +32,7 @@ class PRMNode():
         self.publisher = rospy.Publisher('PRM_Path', Path)
 
 
-    def create_environment(polygons, bounds=None):
+    def create_environment(self, polygons, bounds=None):
         """
         Creates an environment object from a list of polygons representing obstacles.
 
@@ -66,7 +66,7 @@ class PRMNode():
     def plan(self):
         return self.prm_planner.path(self.env, self.env.bounds, self.start, self.goal, self.radius, self.resolution, self.isLazy)
 
-    def prepare_output(path):
+    def prepare_output(self, path):
         output = Path()
         poses = []
         for point in path:
@@ -87,7 +87,7 @@ class PRMNode():
                 (goalx+.01,goaly-.01),
                 (goalx+.01,goaly+.01)])
 
-            self.publisher.publish(prepare_output(self.plan()))
+            self.publisher.publish(self.prepare_output(self.plan()))
 
     def main(self):
         rospy.Subscriber('start_and_end', PathEndPoints, self.path_callback)
