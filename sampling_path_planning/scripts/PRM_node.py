@@ -61,7 +61,7 @@ class PRMNode():
             polygons.append(Polygon(polygon))
        # bounds = [msg.originX, msg.originY, msg.originX + msg.lenX, msg.originY + msg.lenY]
         bounds=None
-        self.env = create_environment(polygons, bounds=bounds)
+        self.env = self.create_environment(polygons, bounds=bounds)
 
     def plan(self):
         return self.prm_planner.path(self.env, self.env.bounds, self.start, self.goal, self.radius, self.resolution, self.isLazy)
