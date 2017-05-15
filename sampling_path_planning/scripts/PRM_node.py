@@ -88,10 +88,10 @@ class PRMNode():
             self.start = message.startpose.position.x, message.startpose.position.y
             goalx, goaly = message.goalpose.position.x, message.goalpose.position.y
             self.goal = Polygon([
-                (goalx-.01,goaly-.01),
-                (goalx-.01,goaly+.01),
-                (goalx+.01,goaly-.01),
-                (goalx+.01,goaly+.01)])
+                (goalx-.05,goaly-.05),
+                (goalx-.05,goaly+.05),
+                (goalx+.05,goaly-.05),
+                (goalx+.05,goaly+.05)])
 
             self.publisher.publish(self.prepare_output(self.plan()))
             #raise NameError("publish was called")
