@@ -72,10 +72,14 @@ class PRMNode():
         poses = []
         for point in path:
             new_pose = PoseStamped()
+            new_pose.header.frame_id = "map"
             new_pose.pose.position.x = point[0]
             new_pose.pose.position.y = point[1]
             poses.append(new_pose)
         output.poses = poses
+
+        #raise NameError("prepare output about to output")
+
         return output
 
     def path_callback(self, message):
@@ -89,6 +93,7 @@ class PRMNode():
                 (goalx+.01,goaly+.01)])
 
             self.publisher.publish(self.prepare_output(self.plan()))
+            #raise NameError("publish was called")
 
     def main(self):
         rospy.Subscriber('start_and_end', PathEndPoints, self.path_callback)
