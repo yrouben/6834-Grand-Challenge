@@ -79,7 +79,7 @@ class PRMPathPlanner():
     def PRMSearch(self, bounds, q_init, radius, q_goal, isLazy):
         '''print "starting roadmap construction"'''
         # number of nodes to put in the roadmap
-        n = min(max(len(self.env.obstacles) *2, 500), 2000)
+        n = min(max(len(self.env.obstacles) *2, 2000), 5000)
         # number of closest neighbours to examine for each configuration
         k = min(int(n/50),15)
 
