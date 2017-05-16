@@ -1,7 +1,7 @@
 #! /usr/bin/env python
 
 from PRMPlanner import PRMPathPlanner
-from shapely.geometry import Polygon
+from shapely.geometry import Polygon, LineString
 from environment import Environment
 
 import rospy
@@ -10,6 +10,8 @@ from sampling_path_planning.msg import MapInfo
 from nav_msgs.msg import Path
 from geometry_msgs.msg import PoseStamped
 from sampling_path_planning.msg import PathEndPoints
+from shapely.geometry import LineString
+
 
 class PRMNode():
 
@@ -61,6 +63,12 @@ class PRMNode():
                 polygon.append([point.x, point.y])
             if len(polygon) >= 3:
                 polygons.append(Polygon(polygon))
+            elif len(polygon) == 2:
+                line = LineString(polygon)
+                polygons.append(line.buffer(self.radius, self.resolution))
+            #else:
+            #    raise NameError("What, is there a polygon of len 2 ??")
+
        # bounds = [msg.originX, msg.originY, msg.originX + msg.lenX, msg.originY + msg.lenY]
         bounds=None
         self.env = self.create_environment(polygons, bounds)
