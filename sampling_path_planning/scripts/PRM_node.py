@@ -8,7 +8,8 @@ import rospy
 
 from sampling_path_planning.msg import MapInfo
 from nav_msgs.msg import Path
-from geometry_msgs.msg import PoseStamped
+from visualization_msgs.msg import Marker, MarkerArray
+from geometry_msgs.msg import Point, PoseStamped
 from sampling_path_planning.msg import PathEndPoints
 from shapely.geometry import LineString
 
@@ -31,6 +32,7 @@ class PRMNode():
 
         rospy.init_node('PRM_Node')
         rospy.Subscriber('map_info', MapInfo, self.prepare_environment)
+        self.polygon_pub = rospy.Publisher('polygon_vis', MarkerArray)
 
         self.publisher = rospy.Publisher('PRM_Path', Path)
 
@@ -70,8 +72,28 @@ class PRMNode():
             #    raise NameError("What, is there a polygon of len 2 ??")
 
        # bounds = [msg.originX, msg.originY, msg.originX + msg.lenX, msg.originY + msg.lenY]
-        bounds=None
-        self.env = self.create_environment(polygons, bounds)
+
+        #convert to MarkerArray
+        marker_array = MarkerArray()
+        markers = []
+        for polygon in polygons:
+            marker = Marker()
+            marker.type = 4
+            marker.action = 0
+            marker.color.a = 1
+            marker.color.r = 1
+            points = []
+            for point in polygon.exterior.coords:
+                new_point = Point()
+                new_point.x = point[0]
+                new_point.y = point[1]
+                new_point.z = 0
+                points.append(new_point)
+            marker.points = points
+            markers.append(marker)
+
+        marker_array.markers = markers
+        self.polygon_pub.publish(marker_array);
 
     def plan(self):
         return self.prm_planner.path(self.env, self.env.bounds, self.start, self.goal, self.radius, self.resolution, self.isLazy)[0]
