@@ -80,6 +80,9 @@ void SamplingPlanner::initialize(std::string name, costmap_2d::Costmap2DROS* cos
 bool SamplingPlanner::makePlan(const geometry_msgs::PoseStamped& start, const geometry_msgs::PoseStamped& goal, std::vector<geometry_msgs::PoseStamped>& plan){
     // Need to publish the endpoints
     // need to subscribe to path 
+    ROS_WARN("%f %f %f", start.pose.position.x, start.pose.position.y, start.pose.position.z);
+    ROS_WARN("%f %f %f", goal.pose.position.x, goal.pose.position.y, goal.pose.position.z);
+    ROS_WARN("%s", goal.header.frame_id);
     sampling_path_planning::PathEndPoints endPts;
     endPts.startpose = start.pose;
     endPts.goalpose = goal.pose;
