@@ -10,6 +10,8 @@ from sampling_path_planning.msg import MapInfo
 from nav_msgs.msg import Path
 from geometry_msgs.msg import PoseStamped
 from sampling_path_planning.msg import PathEndPoints
+from shapely.geometry import LineString
+
 
 class PRMNode():
 
@@ -59,7 +61,13 @@ class PRMNode():
             polygon = []
             for point in rospoly.points:
                 polygon.append([point.x, point.y])
-            polygons.append(Polygon(polygon))
+            if len(polygon) >= 3:
+                polygons.append(Polygon(polygon))
+            elif len(polygon) == 2:
+                line = LineString([polygon[0], polygon[1]])
+                expanded_line = line.buffer(1, 3)
+                polygons.append(line)
+
        # bounds = [msg.originX, msg.originY, msg.originX + msg.lenX, msg.originY + msg.lenY]
         bounds=None
         self.env = self.create_environment(polygons, bounds)
