@@ -8,3 +8,7 @@ locations:
   loc3:
     x: 0.5
     y: 2.0
+  loc4:
+    x: 0.51
+    y: 2.01
+
