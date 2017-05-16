@@ -36,7 +36,7 @@ void SamplingPlanner::initialize(std::string name, costmap_2d::Costmap2DROS* cos
         ros::NodeHandle nh("~/" + name);
         ros::Publisher obstacles_pub = n.advertise<sampling_path_planning::MapInfo>("map_info", 1000);
         endpts_pub_= n.advertise<sampling_path_planning::PathEndPoints>("start_and_end", 1000);
-        path_sub_ = n.subscribe("PRM_path", 1000, &SamplingPlanner::PathCallback, this);
+        path_sub_ = n.subscribe("PRM_Path", 1000, &SamplingPlanner::PathCallback, this);
 
         //try{
             costmap_converter_ = costmap_converter_loader_.createInstance("costmap_converter::CostmapToPolygonsDBSMCCH");
