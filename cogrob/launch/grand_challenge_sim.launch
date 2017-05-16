@@ -38,7 +38,7 @@
 
         <!-- Load up the truth map -->
         <node name="truth_map_server" pkg="map_server" type="map_server"
-              args="$(find cogrob)/data/sim-grid.yaml" />
+              args="$(find cogrob)/data/map.yaml" />
 
         <!-- State estimation -->
         <group>
