@@ -11,16 +11,33 @@ using namespace std;
 namespace sampling_planner {
 
 SamplingPlanner::SamplingPlanner()
-: returnedPath_(NULL),costmap_ros_(NULL),costmap_converter_loader_("costmap_converter", "costmap_converter::BaseCostmapToPolygons"),hasReceivedPath_(false), initialized_(false){}
+: returnedPathPointer_(NULL),savedPoses_(NULL),costmap_ros_(NULL),costmap_converter_loader_("costmap_converter", "costmap_converter::BaseCostmapToPolygons"),hasReceivedPath_(false), initialized_(false){}
 
 SamplingPlanner::SamplingPlanner(std::string name, costmap_2d::Costmap2DROS* costmap_ros)
-: returnedPath_(NULL),costmap_ros_(NULL),costmap_converter_loader_("costmap_converter", "costmap_converter::BaseCostmapToPolygons"),hasReceivedPath_(false), initialized_(false){
+: returnedPathPointer_(NULL),savedPoses_(NULL),costmap_ros_(NULL),costmap_converter_loader_("costmap_converter", "costmap_converter::BaseCostmapToPolygons"),hasReceivedPath_(false), initialized_(false){
 initialize(name, costmap_ros);
 }
 
 void SamplingPlanner::PathCallback(const nav_msgs::Path::ConstPtr& msg) {
     ROS_INFO_STREAM("received");
-    returnedPath_ = const_cast<nav_msgs::Path*>(msg.get());
+    returnedPathPointer_ = const_cast<nav_msgs::Path*>(msg.get());
+    std::vector<geometry_msgs::PoseStamped> returnedPoses = returnedPathPointer_ -> poses;
+    for (int i = 0; i < returnedPoses.size(); i++) {
+        geometry_msgs::PoseStamped new_pose;
+
+        new_pose.pose.position.x = returnedPoses[i].pose.position.x;
+        new_pose.pose.position.y = returnedPoses[i].pose.position.y;
+        
+        new_pose.pose.orientation.x = returnedPoses[i].pose.orientation.x;
+        new_pose.pose.orientation.y = returnedPoses[i].pose.orientation.y;
+        new_pose.pose.orientation.z = returnedPoses[i].pose.orientation.z;
+        new_pose.pose.orientation.w = returnedPoses[i].pose.orientation.w;
+
+        new_pose.header.frame_id = "map";
+
+        savedPoses_.push_back(new_pose);
+    }
+
     hasReceivedPath_ = true;
 }
 
@@ -91,7 +108,7 @@ bool SamplingPlanner::makePlan(const geometry_msgs::PoseStamped& start, const ge
 
     while (true){
         if (hasReceivedPath_){
-            plan = returnedPath_ -> poses;
+            plan = savedPoses_;
             hasReceivedPath_ = false;
             break;
         }

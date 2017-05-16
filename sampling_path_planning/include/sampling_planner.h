@@ -23,8 +23,9 @@ class SamplingPlanner : public nav_core::BaseGlobalPlanner {
 
 private:
     bool hasReceivedPath_;
-    nav_msgs::Path* returnedPath_;
-	bool initialized_;
+    nav_msgs::Path* returnedPathPointer_;
+    std::vector<geometry_msgs::PoseStamped> savedPoses_;
+    bool initialized_;
     ros::Publisher endpts_pub_;
     ros::Subscriber path_sub_;
     costmap_2d::Costmap2DROS* costmap_ros_;
