@@ -64,24 +64,33 @@ class PRMNode():
             for point in rospoly.points:
                 polygon.append([point.x, point.y])
             if len(polygon) >= 3:
-                polygons.append(Polygon(polygon))
+                polygons.append(Polygon(polygon).buffer(0.5))
             elif len(polygon) == 2:
                 line = LineString(polygon)
                 polygons.append(line.buffer(self.radius, self.resolution))
             #else:
             #    raise NameError("What, is there a polygon of len 2 ??")
 
-       # bounds = [msg.originX, msg.originY, msg.originX + msg.lenX, msg.originY + msg.lenY]
+        # bounds = [msg.originX, msg.originY, msg.originX + msg.lenX, msg.originY + msg.lenY]
+
+        bounds=None
+        self.env = self.create_environment(polygons, bounds)
 
         #convert to MarkerArray
         marker_array = MarkerArray()
         markers = []
+        temp_id = 0
         for polygon in polygons:
             marker = Marker()
+            marker.header.frame_id = 'map'
             marker.type = 4
+            marker.ns = 'sampling'
             marker.action = 0
             marker.color.a = 1
             marker.color.r = 1
+            marker.scale.x = 0.05
+            marker.id = temp_id
+            temp_id += 1
             points = []
             for point in polygon.exterior.coords:
                 new_point = Point()
