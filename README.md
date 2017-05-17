@@ -1,7 +1,7 @@
 # 6.834/16.412 Grand Challenge - Sampling-based Path Planning Team
 
 ### To run simulation:
-Create a directory titled `catkin_ws`. Clone this repo into that folder and rename the repo to `src`. Using `sudo apt-get install`, install the following dependencies:
+Create a directory titled `catkin_ws`. Clone this repo into that directory and rename the repo to `src`. Using `sudo apt-get install`, install the following dependencies:
 
 * ros-kinetic-costmap-coverter
 * python-networkx
@@ -22,6 +22,6 @@ Then, from the `catkin_ws` directory, run:
 ~/catkin_ws$ rosrun cogrob achieve-sim-goals
 ```
 
-To edit the locations that the robot travels to modify `cogrob/data/sim-map.yaml`.
+To edit the locations that the robot travels to, modify `cogrob/data/sim-map.yaml`.
 
 
