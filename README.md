@@ -13,6 +13,7 @@ Create a directory titled `catkin_ws`. Clone this repo into that directory and r
 Then, from the `catkin_ws` directory, run:
 ```sh
 ~/catkin_ws$ catkin_make
+~/catkin_ws$ source devel/setup.sh
 ~/catkin_ws$ roscore
 
 # new terminal
